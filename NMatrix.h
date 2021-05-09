@@ -1,10 +1,8 @@
 #ifndef NMATRIX
 #define NMATRIX
 
-#include "Graph.h"
 #include "Representation.h"
-
-struct edge;
+#include "StructLib.h"
 
 class NMatrix : public Representation {
 private:

@@ -2,17 +2,18 @@
 #define GALGORITHM
 
 #include "Graph.h"
+#include "StructLib.h"
 #include <vector>
-
 
 class GAlgorithm {
 private:    
+    algorithm algo;
     Graph& graph;
     std::vector<int> p;
     std::vector<int> key;
-
-
 public:
+    GAlgorithm();
+    ~GAlgorithm();
     std::vector<edge> MST_Kruskal_execute();
     std::vector<edge> MST_Prim_execute();
     std::vector<edge> SP_Dijkstra_execute();
