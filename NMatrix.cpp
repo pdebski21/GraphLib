@@ -13,3 +13,15 @@ NMatrix::~NMatrix() {
         delete mat;
     }
 }
+
+std::vector<int> NMatrix::getAdj(int v_index) {
+    std::vector<int> res;
+    for(int i = 0; i < v_count; i++) 
+        if(mat[v_index][i] > 0)
+            res.push_back(mat[v_index][i]);
+    return res;
+}
+
+int NMatrix::getWeight(int u, int v) {
+    return mat[u][v];
+}
