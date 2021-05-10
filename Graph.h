@@ -4,25 +4,26 @@
 #include <iostream>
 #include <vector>
 #include <exception>
+#include "StructLib.h"
 #include "Representation.h"
 #include "NList.h"
 #include "NMatrix.h"
-#include "StructLib.h"
 
 
 // abstract class for graph representation
 class Graph {
-    private:
-        Representation* rep = nullptr;
-    public:
+private:
+    Representation* rep = nullptr;
+public:
         Graph(int _e_count, int _v_count, std::vector<edge> _edges, represent_type rep_t) {
-            
+            NMatrix matrix(_e_count, _v_count, _edges);
+            NList list(_e_count, _v_count, _edges);
             switch(rep_t) {
                 case r_matrix:
-                    rep = new NMatrix(_e_count, _v_count, _edges);
+                    rep = &matrix;
                     break;
                 case r_list:
-                    rep = new NList(_e_count, _v_count, _edges);
+                    rep = &list;
                     break;
                 default:
                     throw std::runtime_error("Contruction Error - wrong type of Graph representation");
@@ -34,9 +35,10 @@ class Graph {
                 delete rep;
             }
         }
+// settery i gettery
+    Representation* getRepresentation() { return rep; }
 
-        // 
-        // dane pośrednie get wypełnienie / gęstość
+// dane pośrednie get wypełnienie / gęstość
 };
 
 #endif

@@ -12,6 +12,10 @@ NList::~NList() {
         delete list;
 }
 
+void NList::display() {
+
+}
+
 std::vector<int> NList::getAdj(int v_index) {
     std::vector<int> res;
     for(std::pair<int, int> e : list[v_index]) {
@@ -25,4 +29,9 @@ int NList::getWeight(int u, int v) {
         if(e.first == v)
             return e.second;
     return 0;
+}
+
+
+void NList::setValue(int u, int v,int value) {
+
 }

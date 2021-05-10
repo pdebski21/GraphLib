@@ -14,6 +14,10 @@ NMatrix::~NMatrix() {
     }
 }
 
+void NMatrix::display() {
+
+}
+
 std::vector<int> NMatrix::getAdj(int v_index) {
     std::vector<int> res;
     for(int i = 0; i < v_count; i++) 
@@ -24,4 +28,8 @@ std::vector<int> NMatrix::getAdj(int v_index) {
 
 int NMatrix::getWeight(int u, int v) {
     return mat[u][v];
+}
+
+void NMatrix::setValue(int u, int v,int value) {
+
 }

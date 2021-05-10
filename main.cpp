@@ -1,4 +1,5 @@
 #include "FileHandler.h"
+#include "Graph.h"
 
 int main(int argc, char** argv) {
     FileHandler fh;

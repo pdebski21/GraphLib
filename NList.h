@@ -11,11 +11,15 @@ class NList : public Representation {
 private:
     std::forward_list<std::pair<int, int>>* list = nullptr;
 public:
-    NList(int e_count, int v_count, std::vector<edge> edges);
+    NList(int _e_count, int _v_count, std::vector<edge> edges);
     ~NList();
     
-    std::vector<int> getAdj(int v_index) = 0;
-    int getWeight(int u, int v) = 0;
+    void display();
+    std::vector<int> getAdj(int v_index);
+    int getWeight(int u, int v);
+    void setValue(int u, int v,int value);
 };
+
+    
 
 #endif

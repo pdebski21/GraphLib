@@ -10,6 +10,7 @@
 class FileHandler {
     private:
         GraphBuffer g;
+        bool isFileLoaded = false;
     public:
     // I/O
         GraphBuffer read(std::string inPath);
@@ -17,6 +18,7 @@ class FileHandler {
         void display_curr_data();
     // setters / getters
         GraphBuffer& getBuffer() { return g; }
+        bool getIsFileLoaded() { return isFileLoaded; };
         // std::string& getInPath() { return inPath; }
 };
 

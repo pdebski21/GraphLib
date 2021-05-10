@@ -18,6 +18,7 @@ GraphBuffer FileHandler::read(std::string inPath)
             fs >> tmpEdge.beg >> tmpEdge.end >> tmpEdge.weight ;
             g.edges.push_back(tmpEdge);
         }
+        this->isFileLoaded = true;
     }
     else
     {
