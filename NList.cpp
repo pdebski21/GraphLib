@@ -14,10 +14,15 @@ NList::~NList() {
 
 std::vector<int> NList::getAdj(int v_index) {
     std::vector<int> res;
-
+    for(std::pair<int, int> e : list[v_index]) {
+        res.push_back(e.first);
+    }
     return res;
 }
 
 int NList::getWeight(int u, int v) {
-
+    for(std::pair<int, int> e : list[u])
+        if(e.first == v)
+            return e.second;
+    return 0;
 }

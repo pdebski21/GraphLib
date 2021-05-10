@@ -11,8 +11,8 @@ public:
     Representation(int _e_count, int _v_count) : e_count(_e_count), v_count(_v_count) {};
     ~Representation() = default;
     
-    virtual std::vector<int> getAdj(int v_index);
-    virtual int getWeight(int u, int v);
+    virtual std::vector<int> getAdj(int v_index) = 0;
+    virtual int getWeight(int u, int v) = 0;
 };
 
 #endif

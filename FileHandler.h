@@ -10,7 +10,6 @@
 class FileHandler {
     private:
         GraphBuffer g;
-        std::string inPath;
     public:
     // I/O
         GraphBuffer read(std::string inPath);

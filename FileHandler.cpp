@@ -9,17 +9,15 @@
 
 GraphBuffer FileHandler::read(std::string inPath)
 {
-    GraphBuffer g;
     edge tmpEdge;
     std::ifstream fs(inPath, std::ifstream::in);
     if (fs.is_open())
     {
         fs >> g.edges_cnt >> g.vertices_cnt >> g.start_v >> g.end_v;    // 1 linia
         for(int i = 0; i < g.edges_cnt; i++) {
-            fs >> tmpEdge.beg >> tmpEdge.weight >> tmpEdge.weight ;
+            fs >> tmpEdge.beg >> tmpEdge.end >> tmpEdge.weight ;
             g.edges.push_back(tmpEdge);
         }
-        this->inPath = inPath;
     }
     else
     {

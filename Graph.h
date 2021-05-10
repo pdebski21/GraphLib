@@ -10,7 +10,6 @@
 #include "StructLib.h"
 
 
-
 // abstract class for graph representation
 class Graph {
     private:
