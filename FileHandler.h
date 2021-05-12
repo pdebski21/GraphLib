@@ -13,7 +13,7 @@ class FileHandler {
         bool isFileLoaded = false;
     public:
     // I/O
-        GraphBuffer read(std::string inPath);
+        GraphBuffer& read(std::string inPath);
         void write(std::string outPath);
         void display_curr_data();
     // setters / getters

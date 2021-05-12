@@ -6,7 +6,6 @@
 
 class GraphGenerator {
     
-
     GraphGenerator() {
         srand(time(NULL));
 

@@ -2,28 +2,58 @@
 #define CORE
 
 #include "Graph.h"
+#include "StructLib.h"
 #include "GAlgorithm.h"
 #include "FileHandler.h"
-#include "StructLib.h"
+// #include "GraphGenerator.h"
+
+#include <exception>
+#include <string>
 
 class Core {
 private:
-    Graph graph;
-    GAlgorithm Galgo;
+    Graph* graph = nullptr;
+    GAlgorithm* Galgo = nullptr;
     FileHandler fh;
+    // GraphGenerator Ggenerator;
 public:
+    Core();
     Core(GraphBuffer gbuffer);
+    ~Core();
 
-    void init_algorithm();
-    void init_graph();
+    void init_file(std::string path);
+    void init_algorithm(GraphBuffer gbuffer, algo_type a_type);
+    void init_graph(GraphBuffer gbuffer, represent_type r_type);
 };
-    
-    void Core::init_algorithm() {
 
-    }
+Core::Core() {
+    init_file("data.txt");
+    init_algorithm(fh.getBuffer(), MST_Prim);
+    Galgo->display();
 
-    void Core::init_graph() {
-        
-    }
+    init_graph(fh.getBuffer(), r_matrix);
+    graph->display();
+    graph->getRepresentation()->display_adj(2);
+}
+
+Core::Core(GraphBuffer gbuffer) {
+
+}
+
+Core::~Core() {
+    if(graph != nullptr) delete graph;
+    if(Galgo != nullptr) delete Galgo;
+}
+
+void Core::init_file(std::string path) { fh.read(path); }
+
+void Core::init_algorithm(GraphBuffer gbuffer, algo_type a_type) {
+    algorithm algo(a_type ,gbuffer.start_v, gbuffer.end_v);
+    Galgo = new GAlgorithm(graph, algo);
+}
+
+void Core::init_graph(GraphBuffer gbuffer, represent_type r_type) {
+    graph = new Graph(gbuffer.edges_cnt, gbuffer.vertices_cnt, gbuffer.edges, r_type);
+}
 
 #endif

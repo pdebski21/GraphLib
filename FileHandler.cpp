@@ -7,7 +7,7 @@
     // start_v, end_v, waga/przepustowosc
     // dla MTS nieskierowane dla scieżki i przepływu traktowane jako skierowane
 
-GraphBuffer FileHandler::read(std::string inPath)
+GraphBuffer& FileHandler::read(std::string inPath)
 {
     edge tmpEdge;
     std::ifstream fs(inPath, std::ifstream::in);

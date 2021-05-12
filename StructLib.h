@@ -12,15 +12,17 @@ struct edge {
     int end;
     int weight;
     void display() { std::cout << "beg (" << beg << ") end (" << end << ") weight(" << weight << ")" << std::endl; }
-};
-typedef edge edge;
+}; typedef edge edge;
 
 struct algorithm {
     algo_type a_type;
     int v_start;
     int v_end;
-};
-typedef algorithm algorithm;
+    algorithm() {}
+    algorithm(algo_type _a_type, int _v_start, int _v_end): a_type(_a_type), v_start(_v_start), v_end(_v_end) {}
+    void display() { std::cout << "start vertex (" << v_start << ") end vertex (" <<
+                     v_end << ") algorithm type(" << a_type << ")" << std::endl; }
+}; typedef algorithm algorithm;
 
 // poprawna struktura edges_cnt 0 -
 // vertices_cnt 0 -
@@ -38,14 +40,13 @@ struct GraphBuffer{
         std::cout << "edges count: " << edges_cnt << std::endl;
         std::cout << "vertices count: " << vertices_cnt << std::endl;
         std::cout << "start vertex: " << start_v << std::endl;
-        std::cout << "end vertex" << end_v << std::endl;
+        std::cout << "end vertex: " << end_v << std::endl;
         std::cout << "edges: " << std::endl;
         for(edge e : edges) {
             e.display();
         }
     }
-};
-typedef GraphBuffer GraphBuffer;
+}; typedef GraphBuffer GraphBuffer;
 
 
 #endif
