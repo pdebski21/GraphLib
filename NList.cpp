@@ -26,8 +26,10 @@ void NList::display() {
 
 std::vector<int> NList::getAdj(int v_index) {
     std::vector<int> res;
-    for(std::pair<int, int> e : list[v_index]) {
-        res.push_back(e.first);
+    if(v_index < v_count && v_index >=0) {
+        for(std::pair<int, int> e : list[v_index]) {
+            res.push_back(e.first);
+        }
     }
     return res;
 }

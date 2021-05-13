@@ -28,12 +28,18 @@ public:
 
 Core::Core() {
     init_file("data.txt");
-    init_algorithm(fh.getBuffer(), MST_Prim);
-    Galgo->display();
-
     init_graph(fh.getBuffer(), r_matrix);
-    graph->display();
-    graph->getRepresentation()->display_adj(2);
+    init_algorithm(fh.getBuffer(), SP_Dijkstra);
+    
+    // Galgo->display();
+    // graph->display();
+    // graph->getRepresentation()->display_adj(2);
+    
+    //Galgo->MST_Prim_execute();
+    //Galgo->display_MST();
+
+    Galgo->SP_Dijkstra_execute();
+    
 }
 
 Core::Core(GraphBuffer gbuffer) {
@@ -49,7 +55,7 @@ void Core::init_file(std::string path) { fh.read(path); }
 
 void Core::init_algorithm(GraphBuffer gbuffer, algo_type a_type) {
     algorithm algo(a_type ,gbuffer.start_v, gbuffer.end_v);
-    Galgo = new GAlgorithm(graph, algo);
+    Galgo = new GAlgorithm(&graph, algo);
 }
 
 void Core::init_graph(GraphBuffer gbuffer, represent_type r_type) {
