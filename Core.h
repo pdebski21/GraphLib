@@ -29,17 +29,17 @@ public:
 Core::Core() {
     init_file("data.txt");
     init_graph(fh.getBuffer(), r_matrix);
-    init_algorithm(fh.getBuffer(), SP_Dijkstra);
+    init_algorithm(fh.getBuffer(), SP_Bellman_Ford);
     
     Galgo->display();
-    graph->display();
+    //graph->display();
     // graph->getRepresentation()->display_adj(2);
     
     //Galgo->MST_Prim_execute();
     //Galgo->display_MST();
 
-    Galgo->SP_Dijkstra_execute();
-    
+    //Galgo->SP_Dijkstra_execute();
+    Galgo->SP_Bellman_Ford_execute();
 }
 
 Core::Core(GraphBuffer gbuffer) {

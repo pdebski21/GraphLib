@@ -11,6 +11,8 @@ struct edge {
     int beg;
     int end;
     int weight;
+    edge() {};
+    edge(int _beg, int _end, int _weight) : beg(_beg), end(_end), weight(_weight) {}
     void display() { std::cout << "beg (" << beg << ") end (" << end << ") weight(" << weight << ")" << std::endl; }
 }; typedef edge edge;
 

@@ -12,6 +12,7 @@ class GAlgorithm {
 private:    
     Graph* graph;
     algorithm algo;
+    std::vector<edge> edges;
     std::vector<int> p;     // poprzednik
     std::vector<int> key;   // klucz
     std::vector<int> d;     // dystans
@@ -41,6 +42,20 @@ GAlgorithm::GAlgorithm(Graph** _graph, algorithm _algo) : graph(*_graph), algo(_
     key.resize(graph->getRepresentation()->v_count);
     p.resize(graph->getRepresentation()->v_count);
     d.resize(graph->getRepresentation()->v_count);
+    // init krawędzie jeżeli algorytm Bellmana Forda
+    if(algo.a_type == SP_Bellman_Ford) {
+        for(int i = 0; i < graph->getRepresentation()->v_count - 1; i++) {
+            std::vector<int> adj = graph->getRepresentation()->getAdj(i);
+            for(int e : adj) {
+                edges.push_back(edge(i, e, graph->getRepresentation()->getWeight(i, e)));
+            }
+        }
+    }
+    /*
+    for(edge e : edges) {
+        e.display();
+    }
+    */
 }
 
 GAlgorithm::~GAlgorithm() {}
@@ -135,13 +150,49 @@ std::vector<edge> GAlgorithm::SP_Dijkstra_execute() {
         }
     }  
 // displ
-    std::cout << "finalne wartości:" << std::endl;
+    std::cout << "finalne wartosci:" << std::endl;
     for(int i = 0; i < graph->getRepresentation()->v_count; i ++) {
         std::cout << i << ": d " << d[i] << " p " << p[i] << std::endl;
     }
 
 }
 
+std::vector<edge> GAlgorithm::SP_Bellman_Ford_execute() {
+    // init
+    std::vector<std::pair<int, int*>> v_d;   // first index wierzchołka, second dystans
+    for(int i = graph->getRepresentation()->v_count - 1; i >= 0; i--) {
+        d[i] = 10000;
+        p[i] = -1;
+    }
+    d[algo.v_start] = 0;
+
+    // relaksacja dla każdej krawędzi 
+    for(int i = 0; i < graph->getRepresentation()->v_count - 1; i++) {
+        bool relaxed = false;
+        for(edge e : edges) {
+            if( d[e.end] > d[e.beg] + graph->getRepresentation()->getWeight(e.beg, e.end)) {
+                d[e.end] = d[e.beg] + graph->getRepresentation()->getWeight(e.beg, e.end);
+                p[e.end] = e.beg;
+                relaxed = true;
+                //std::cout << e.end << ": d " << d[e.end] << " p " << p[e.end] << std::endl;
+            }
+        }
+        std::cout << relaxed;
+        if(relaxed == false) break; // jeżeli nie wykonano żandej relaksacji skracamy algorytm
+    }
+    // sprawdzenie czy są cykle ujemne
+    for(edge e : edges) {
+        if(d[e.end] > d[e.beg] + graph->getRepresentation()->getWeight(e.beg, e.end))
+            std::cout << "CYKLE UJEMNE - DO SOMETHING" << std::endl;
+    }
+
+// displ
+    std::cout << "finalne wartosci:" << std::endl;
+    for(int i = 0; i < graph->getRepresentation()->v_count; i ++) {
+        std::cout << i << ": d " << d[i] << " p " << p[i] << std::endl;
+    }
+
+}
 
 
 void GAlgorithm::display_MST() {
