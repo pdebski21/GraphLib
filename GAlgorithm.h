@@ -40,6 +40,7 @@ GAlgorithm::GAlgorithm() {}
 GAlgorithm::GAlgorithm(Graph** _graph, algorithm _algo) : graph(*_graph), algo(_algo) {
     key.resize(graph->getRepresentation()->v_count);
     p.resize(graph->getRepresentation()->v_count);
+    d.resize(graph->getRepresentation()->v_count);
 }
 
 GAlgorithm::~GAlgorithm() {}
@@ -106,41 +107,38 @@ std::vector<edge> GAlgorithm::MST_Kruskal_execute() {
 }
 
 std::vector<edge> GAlgorithm::SP_Dijkstra_execute() {
-    
     // init
-    std::vector<std::pair<int, int>> v_d;   // first index wierzchołka, second dystans
-    for(int i = graph->getRepresentation()->v_count; i > 0; i--) {
-        v_d.push_back(std::pair<int, int>(i, std::numeric_limits<int>::max()));
+    std::vector<std::pair<int, int*>> v_d;   // first index wierzchołka, second dystans
+    for(int i = graph->getRepresentation()->v_count - 1; i >= 0; i--) {
+        d[i] = std::numeric_limits<int>::max();
         p[i] = -1;
+        v_d.push_back(std::pair<int, int*>(i, &d[i]));
     }
-    v_d[algo.v_start].second = 0;   // dystans do 1 wierzchołka to 0
+    d[algo.v_start] = 0;   // dystans do 1 wierzchołka to 0
 
+    std::make_heap(v_d.begin(), v_d.end(), [](std::pair<int, int*> l, std::pair<int, int*> r){ return *l.second > *r.second; });
     
-    std::make_heap(v_d.begin(), v_d.end(), [](std::pair<int, int> l, std::pair<int, int> r){ return l.second > r.second; });
-    for(std::pair<int, int> e : v_d)
-        std::cout << e.first << "||" << e.second << std::endl;
-    
-
     while(!v_d.empty()) {
-        ////// displ
-        std::cout << "is heap:" << std::is_heap(v_d.begin(), v_d.end(), 
-                [](std::pair<int, int> l, std::pair<int, int> r){ return l.second > r.second; }) << std::endl;
-        for(std::pair<int, int> e : v_d)
-            std::cout << e.first << "||" << e.second << std::endl;
-        //////////
-
-        std::pop_heap(v_d.begin(), v_d.end(), [](std::pair<int, int> l, std::pair<int, int> r){ return l.second > r.second; });
-        std::pair<int, int> u = v_d.back();
+        // zdejmij min element
+        std::pop_heap(v_d.begin(), v_d.end(), [](std::pair<int, int*> l, std::pair<int, int*> r){ return *l.second > *r.second; });
+        std::pair<int, int*> u = v_d.back();
         v_d.pop_back();
-        
+        // dla każdego sąsiada min elementu wykonaj petle
         std::vector<int> adj = graph->getRepresentation()->getAdj(u.first); // sąsiedzi u
+        std::cout << "odwiedzone z " << u.first << std::endl;
         for(int e : adj) {
-            
+            if(d[e] > *u.second + graph->getRepresentation()->getWeight(u.first, e)) {
+                d[e] = *u.second + graph->getRepresentation()->getWeight(u.first, e);
+                p[e] = u.first;
+                std::cout << e << ": d " << d[e] << " p " << p[e] << std::endl;
+            }
         }
+    }  
+// displ
+    std::cout << "finalne wartości:" << std::endl;
+    for(int i = 0; i < graph->getRepresentation()->v_count; i ++) {
+        std::cout << i << ": d " << d[i] << " p " << p[i] << std::endl;
     }
-    std::cout << "lol:";    
-
-
 
 }
 
@@ -159,7 +157,7 @@ void GAlgorithm::display_MST() {
 void GAlgorithm::display_SP() {
     std::cout.width(5);
     std::cout << "End" << "Dist" << "Path";
-    for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
+    for(int i = 0; i < graph->getRepresentation()->v_count - 1; i++) {
         std::vector<int> path;
         int prev = i;
         while(p[prev] != algo.v_start) {

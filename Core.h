@@ -31,8 +31,8 @@ Core::Core() {
     init_graph(fh.getBuffer(), r_matrix);
     init_algorithm(fh.getBuffer(), SP_Dijkstra);
     
-    // Galgo->display();
-    // graph->display();
+    Galgo->display();
+    graph->display();
     // graph->getRepresentation()->display_adj(2);
     
     //Galgo->MST_Prim_execute();
