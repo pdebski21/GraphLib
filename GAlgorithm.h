@@ -61,38 +61,37 @@ GAlgorithm::GAlgorithm(Graph** _graph, algorithm _algo) : graph(*_graph), algo(_
 GAlgorithm::~GAlgorithm() {}
 
 std::vector<edge> GAlgorithm::MST_Prim_execute() {
-    for(int i = 0; i < graph->getRepresentation()->v_count; i++) key[i] = std::numeric_limits<int>::max();
-    key[algo.v_start] = 0;
-    p[algo.v_start] = -1; // nie ma poprzednika dla wierzchołka startowego
-    // przygotowanie kolejki / kopca dla wierzchołków grafu
-    auto cmp = [](std::pair<int, int> left, std::pair<int, int> right) { 
-        return (left.second) > (right.second);
-    };
-    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int,int>>,  decltype(cmp)> pq(cmp);
-    // wypełnij kolejkę
-    for(int i = 0; i < graph->getRepresentation()->v_count; i++)
-        pq.push(std::pair<int, int>(i, key[i]));
-    // wyświetl kolejkę <3
-    /*
-    while (pq.empty() == false)
-    {
-        std::cout << pq.top().first << "&" << pq.top().second << " ";
-        pq.pop();
+    std::vector<std::pair<int, int*>> v_key;
+    for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
+        key[i] = std::numeric_limits<int>::max();
+        p[algo.v_start] = -1; // nie ma poprzednika dla wierzchołka startowego
     }
-    */
+    key[algo.v_start] = 0;
+
+    // przygotowanie kolejki / kopca dla wierzchołków grafu
+    std::make_heap(v_key.begin(), v_key.end(), [](std::pair<int, int*> l, std::pair<int, int*> r){ return *l.second > *r.second; });
+    // wypełnij kolejkę
+    for(int i = graph->getRepresentation()->v_count; i >= 0; i++)
+        v_key.push_back(std::pair<int, int*>(i, &key[i]));
+    // wyświetl kolejkę <3
+
     // dopóki kolejka nie jest pusta wykonuj algorytm
     std::vector<int> out_of_pq;
-    while(!pq.empty()) {
-        std::pair<int, int> u = pq.top();                                   // wierzchołek z najmniejszym key
-        out_of_pq.push_back(u.first);                                       // zachowaj usunięty wierzchołek jako użyty
-        pq.pop();                                                           // usuń z kolejki                                               
+    while(!v_key.empty()) {
+        std::pop_heap(v_key.begin(), v_key.end(), [](std::pair<int, int*> l, std::pair<int, int*> r){ return *l.second > *r.second; });
+        std::pair<int, int*> u = v_key.back();
+        v_key.pop_back();                                                                               
         std::vector<int> v = graph->getRepresentation()->getAdj(u.first);   // list sąsiadów wierzchołka u
         for(int e : v) {
-            if( std::find(out_of_pq.begin(), out_of_pq.end(), e) != out_of_pq.end()
+            /*
+            auto predicate = []() {}; // czy jest już w kolejce
+            if( std::find_if(v_key.begin(), v_key.end(), predicate) != v_key.end() 
                 && graph->getRepresentation()->getWeight(u.first, e) < key[e] ) {
+                
                 key[e] = graph->getRepresentation()->getWeight(u.first, e);
                 p[e] = u.first;
             }
+            */
         }
     }
 }
