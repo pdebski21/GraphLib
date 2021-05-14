@@ -6,6 +6,7 @@
 #include "GAlgorithm.h"
 #include "FileHandler.h"
 // #include "GraphGenerator.h"
+#include "Menu.h"
 
 #include <exception>
 #include <string>
@@ -15,10 +16,10 @@ private:
     Graph* graph = nullptr;
     GAlgorithm* Galgo = nullptr;
     FileHandler fh;
+    Menu menu;
     // GraphGenerator Ggenerator;
 public:
     Core();
-    Core(GraphBuffer gbuffer);
     ~Core();
 
     void init_file(std::string path);
@@ -42,9 +43,6 @@ Core::Core() {
     Galgo->SP_Bellman_Ford_execute();
 }
 
-Core::Core(GraphBuffer gbuffer) {
-
-}
 
 Core::~Core() {
     if(graph != nullptr) delete graph;
