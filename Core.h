@@ -7,7 +7,6 @@
 #include "FileHandler.h"
 // #include "GraphGenerator.h"
 #include "Menu.h"
-
 #include <exception>
 #include <string>
 
@@ -27,10 +26,11 @@ public:
     void init_graph(GraphBuffer gbuffer, represent_type r_type);
 };
 
-Core::Core() {
+Core::Core() : menu() {
+
     init_file("data.txt");
     init_graph(fh.getBuffer(), r_matrix);
-    init_algorithm(fh.getBuffer(), SP_Bellman_Ford);
+    init_algorithm(fh.getBuffer(), MST_Prim);
     
     Galgo->display();
     //graph->display();
@@ -39,8 +39,8 @@ Core::Core() {
     //Galgo->MST_Prim_execute();
     //Galgo->display_MST();
 
-    //Galgo->SP_Dijkstra_execute();
-    Galgo->SP_Bellman_Ford_execute();
+    Galgo->SP_Dijkstra_execute();
+    //Galgo->SP_Bellman_Ford_execute();
 }
 
 

@@ -61,38 +61,45 @@ GAlgorithm::GAlgorithm(Graph** _graph, algorithm _algo) : graph(*_graph), algo(_
 GAlgorithm::~GAlgorithm() {}
 
 std::vector<edge> GAlgorithm::MST_Prim_execute() {
+    std::vector<bool> mstSet;
+    mstSet.resize(graph->getRepresentation()->v_count);
     std::vector<std::pair<int, int*>> v_key;
     for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
+        mstSet.push_back(false);
         key[i] = std::numeric_limits<int>::max();
         p[algo.v_start] = -1; // nie ma poprzednika dla wierzchołka startowego
     }
     key[algo.v_start] = 0;
 
+    // wypełnij kolejkę
+    for(int i = 0; i < graph->getRepresentation()->v_count; i++)
+        v_key.push_back(std::pair<int, int*>(i, &key[i]));
     // przygotowanie kolejki / kopca dla wierzchołków grafu
     std::make_heap(v_key.begin(), v_key.end(), [](std::pair<int, int*> l, std::pair<int, int*> r){ return *l.second > *r.second; });
-    // wypełnij kolejkę
-    for(int i = graph->getRepresentation()->v_count; i >= 0; i++)
-        v_key.push_back(std::pair<int, int*>(i, &key[i]));
     // wyświetl kolejkę <3
 
     // dopóki kolejka nie jest pusta wykonuj algorytm
     std::vector<int> out_of_pq;
     while(!v_key.empty()) {
+        // pobierz z kolejki
         std::pop_heap(v_key.begin(), v_key.end(), [](std::pair<int, int*> l, std::pair<int, int*> r){ return *l.second > *r.second; });
         std::pair<int, int*> u = v_key.back();
-        v_key.pop_back();                                                                               
+        v_key.pop_back();
+        // zaznacz że należy do drzewa
+        mstSet[u.first] = true;
         std::vector<int> v = graph->getRepresentation()->getAdj(u.first);   // list sąsiadów wierzchołka u
+
         for(int e : v) {
-            /*
-            auto predicate = []() {}; // czy jest już w kolejce
-            if( std::find_if(v_key.begin(), v_key.end(), predicate) != v_key.end() 
-                && graph->getRepresentation()->getWeight(u.first, e) < key[e] ) {
+            if(mstSet[e] == false && graph->getRepresentation()->getWeight(u.first, e) < key[e] ) {
                 
                 key[e] = graph->getRepresentation()->getWeight(u.first, e);
                 p[e] = u.first;
             }
-            */
         }
+    }
+
+    for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
+        std::cout << "key:" << key[i] << "p:" << p[i] << std::endl;
     }
 }
 
