@@ -6,7 +6,6 @@
 #include "GAlgorithm.h"
 #include "FileHandler.h"
 // #include "GraphGenerator.h"
-#include "Menu.h"
 #include <exception>
 #include <string>
 
@@ -15,7 +14,6 @@ private:
     Graph* graph = nullptr;
     GAlgorithm* Galgo = nullptr;
     FileHandler fh;
-    Menu menu;
     // GraphGenerator Ggenerator;
 public:
     Core();
@@ -24,10 +22,14 @@ public:
     void init_file(std::string path);
     void init_algorithm(GraphBuffer gbuffer, algo_type a_type);
     void init_graph(GraphBuffer gbuffer, represent_type r_type);
+// setters && getters
+    Graph* getGraph() { return graph; }
+    GAlgorithm* getGalgo() { return Galgo; }
 };
 
-Core::Core() : menu() {
 
+Core::Core() {
+    /*
     init_file("data.txt");
     init_graph(fh.getBuffer(), r_matrix);
     init_algorithm(fh.getBuffer(), MST_Prim);
@@ -41,6 +43,7 @@ Core::Core() : menu() {
 
     Galgo->SP_Dijkstra_execute();
     //Galgo->SP_Bellman_Ford_execute();
+    */
 }
 
 
@@ -53,10 +56,12 @@ void Core::init_file(std::string path) { fh.read(path); }
 
 void Core::init_algorithm(GraphBuffer gbuffer, algo_type a_type) {
     algorithm algo(a_type ,gbuffer.start_v, gbuffer.end_v);
+    if(Galgo != nullptr) { delete Galgo; }
     Galgo = new GAlgorithm(&graph, algo);
 }
 
 void Core::init_graph(GraphBuffer gbuffer, represent_type r_type) {
+    if(graph != nullptr) { delete graph; }
     graph = new Graph(gbuffer.edges_cnt, gbuffer.vertices_cnt, gbuffer.edges, r_type);
 }
 

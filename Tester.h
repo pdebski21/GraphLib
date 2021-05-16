@@ -7,9 +7,9 @@
 
 class Tester {
 private:
-    Graph* graph;
-    GAlgorithm* galgo;
-public:
+    Graph* graph = nullptr;
+    GAlgorithm* galgo = nullptr;
+public: 
     Tester() {}
     Tester(Graph* _graph, GAlgorithm* _galgo) : graph(_graph), galgo(_galgo) {}
 
@@ -26,8 +26,14 @@ public:
     void setGalgo(GAlgorithm* _galgo) { galgo = _galgo; }
 };
 
-void Tester::test_correctness_MST_Prim() {}
-void Tester::test_correctness_MST_Kruskal() {}
+void Tester::test_correctness_MST_Prim() {
+    galgo->MST_Prim_execute();
+}
+
+void Tester::test_correctness_MST_Kruskal() {
+
+}
+
 void Tester::test_correctness_SP_Djikstra() {}
 void Tester::test_correctness_SP_Bellman_Ford() {}
 void Tester::test_efficiency() {}

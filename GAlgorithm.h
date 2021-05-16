@@ -7,6 +7,7 @@
 #include <limits>
 #include <queue>
 #include <algorithm>
+#include <iostream>
 
 class GAlgorithm {
 private:    
@@ -20,16 +21,15 @@ public:
     GAlgorithm();
     GAlgorithm(Graph** graph, algorithm algo);
     ~GAlgorithm();
-    // algorithm execution
+// algorithm execution
     std::vector<edge> MST_Kruskal_execute();
     std::vector<edge> MST_Prim_execute();
     std::vector<edge> SP_Dijkstra_execute();
     std::vector<edge> SP_Bellman_Ford_execute();
-    // I/O
+// I/O
     void display();
     void display_MST();
     void display_SP();
-
 };
 
 // potrzebne:
@@ -202,6 +202,7 @@ std::vector<edge> GAlgorithm::SP_Bellman_Ford_execute() {
 
 
 void GAlgorithm::display_MST() {
+    /*
     for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
         std::cout << "p:" << p[i] << ", ";
     }
@@ -209,12 +210,19 @@ void GAlgorithm::display_MST() {
     for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
         std::cout << "key:" << key[i] << ", ";
     }
+    */
+    int mst_sum = 0;
+    std::cout << "Edge \t Weight" << std::endl;
+    for (int i = 0; i < graph->getRepresentation()->v_count; i++) {
+        std::cout << "(" << p[i]<< ", " << i << ") \t" << key[i] << std::endl;
+        mst_sum += key[i];
+    }
+    std::cout << "MST = " << mst_sum << std::endl;
 }
 
 void GAlgorithm::display_SP() {
-    std::cout.width(5);
-    std::cout << "End" << "Dist" << "Path";
-    for(int i = 0; i < graph->getRepresentation()->v_count - 1; i++) {
+    std::cout << "End\t" << "Dist\t" << "Path\t";
+    for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
         std::vector<int> path;
         int prev = i;
         while(p[prev] != algo.v_start) {

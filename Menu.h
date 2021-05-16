@@ -5,16 +5,17 @@
 #include <string>
 #include "Tester.h"
 #include "FileHandler.h"
-
+#include "Core.h"
 
 class Menu {
 private:
     Tester tester;
     FileHandler fhandl;
-
+    Core* core = nullptr;
 public:
     Menu() {};
     Menu(Graph* graph, GAlgorithm* galgo) : tester(graph, galgo) {}
+    Menu(Core* _core) :core(_core) {}
     void menu_correctness();
     void menu_core();
 };
@@ -26,8 +27,8 @@ void Menu::menu_core() {
     std::cout << "1) Test functionality" << std::endl;
     std::cout << "2) Test efficiency" << std::endl;
     std::cout << "3) Exit" << std::endl;
-    std::cin >> control;
     while(control != 3) {
+    std::cin >> control;    
         switch(control) {
             case 1:
                 std::cout << "Load File with graph" << std::endl;
@@ -37,7 +38,6 @@ void Menu::menu_core() {
                 if(fhandl.getIsFileLoaded()) {
                     std::cout << "Graph in file:" << std::endl;
                     fhandl.getBuffer().display();
-                    // load graph
                     menu_correctness();
                 } else {
                     std::cout << "Problem in reading file occured - check entered file path" << std::endl;
@@ -53,30 +53,60 @@ void Menu::menu_core() {
                 break;
         }
     }
+    
 } 
 
 void Menu::menu_correctness() {
-    int control;
-    std::cout << "CORRECTNESS MENU" << std::endl;
-    std::cout << "1) execute MST PRIM algorithm" << std::endl;
-    std::cout << "2) execute MST Kruskal algorithm" << std::endl;
-    std::cout << "3) execute Shortest Path Djikstra algorithm" << std::endl;
-    std::cout << "4) execute Shortest Path Bellman-Ford algorithm" << std::endl;
-    std::cout << "5) Exit" << std::endl;
-    std::cin >> control;
+    represent_type r_type;
+    int control = 0;
+    int rep_control = 0;
     while(control != 5) {
+        while(rep_control != 1 && rep_control != 2) {
+            std::cout << "Choose representation type:" << std::endl;
+            std::cout << "1) Neighborhood Matrix:" << std::endl;
+            std::cout << "2) Neighborhood List:" << std::endl;
+            std::cin >> rep_control;
+            switch(rep_control) {
+                case 1:
+                    r_type = r_matrix;
+                    break;
+                case 2:
+                    r_type = r_list;
+                    break;
+                default:
+                    std::cout << "OPTION OUT OF MENU :" << std::endl;
+            }
+        }
+        core->init_graph(fhandl.getBuffer(), r_type);
+
+        std::cout << "CORRECTNESS MENU" << std::endl;
+        std::cout << "1) execute MST PRIM algorithm" << std::endl;
+        std::cout << "2) execute MST Kruskal algorithm" << std::endl;
+        std::cout << "3) execute Shortest Path Djikstra algorithm" << std::endl;
+        std::cout << "4) execute Shortest Path Bellman-Ford algorithm" << std::endl;
+        std::cout << "5) Exit" << std::endl;
+        std::cin >> control;
+
         switch(control) {
             case 1:
-                tester.test_correctness_MST_Prim();
+                core->init_algorithm(fhandl.getBuffer(), MST_Prim);
+                core->getGalgo()->MST_Prim_execute();
+                core->getGalgo()->display_MST();
                 break;
             case 2:
-                tester.test_correctness_MST_Kruskal();
+                core->init_algorithm(fhandl.getBuffer(), MST_Kruskal);
+                core->getGalgo()->MST_Kruskal_execute();
+                core->getGalgo()->display_MST();
                 break;
             case 3:
-                tester.test_correctness_SP_Djikstra();
+                core->init_algorithm(fhandl.getBuffer(), SP_Dijkstra);
+                core->getGalgo()->SP_Dijkstra_execute();
+                core->getGalgo()->display_SP();
                 break;
             case 4:
-                tester.test_correctness_SP_Bellman_Ford();
+                core->init_algorithm(fhandl.getBuffer(), SP_Bellman_Ford);
+                core->getGalgo()->SP_Bellman_Ford_execute();
+                core->getGalgo()->display_SP();
                 break;
             case 5:
                 break;
@@ -85,6 +115,6 @@ void Menu::menu_correctness() {
                 break;
         }
     }
-} 
+}
 
 #endif
