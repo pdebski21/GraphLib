@@ -21,6 +21,11 @@ struct algorithm {
     int v_start;
     int v_end;
     algorithm() {}
+    algorithm(algorithm& a) {
+        this->a_type = a.a_type;
+        this->v_start = a.v_start;
+        this->v_end = a.v_end;
+    }
     algorithm(algo_type _a_type, int _v_start, int _v_end): a_type(_a_type), v_start(_v_start), v_end(_v_end) {}
     void display() { std::cout << "start vertex (" << v_start << ") end vertex (" <<
                      v_end << ") algorithm type(" << a_type << ")" << std::endl; }

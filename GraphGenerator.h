@@ -9,18 +9,18 @@
 
 class GraphGenerator {
     
+private:
+public:
     GraphGenerator() {
         srand(time(NULL));
 
     }
 
-    Graph* Random_Generate(int v_max, double density, represent_type r_type) {;
-        int v_count = rand() % (v_max + 1);
-
+    static Graph* Random_Generate(int v_count, double density, represent_type r_type) {;
         return Generate(density, v_count, r_type);
     }
 
-    Graph* Generate(double density, int v_count, represent_type r_type) {
+    static Graph* Generate(double density, int v_count, represent_type r_type) {
         std::vector<edge> edges;
         int e_count = v_count * (v_count - 1) * density / 2;
         int unique_edge = 0;
@@ -30,7 +30,7 @@ class GraphGenerator {
             unique_edge++;
             edges.push_back(tmp_e);
         }
-        return new Graph();
+        return new Graph(unique_edge, v_count, edges, r_type);
     }
 
 };

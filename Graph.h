@@ -16,6 +16,10 @@ private:
     Representation* rep = nullptr;
 public:
     Graph() {};
+    Graph(Graph*& graph) {
+        rep = graph->rep;
+    }
+
     Graph(int _e_count, int _v_count, std::vector<edge> _edges, represent_type rep_t) {
         switch(rep_t) {
             case r_matrix:
@@ -26,8 +30,7 @@ public:
                 break;
             default:
                 throw std::runtime_error("Contruction Error - wrong type of Graph representation");
-        }
-        
+        }   
     }
 
     ~Graph() {

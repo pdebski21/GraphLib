@@ -28,7 +28,7 @@ void Menu::menu_core() {
     std::cout << "2) Test efficiency" << std::endl;
     std::cout << "3) Exit" << std::endl;
     while(control != 3) {
-    std::cin >> control;    
+        std::cin >> control;    
         switch(control) {
             case 1:
                 std::cout << "Load File with graph" << std::endl;
@@ -44,7 +44,8 @@ void Menu::menu_core() {
                 }
                 break;
             case 2:
-                // tester.test_efficiency();
+                std::cout << "EFFICIENCY TEST" << std::endl;
+                tester.test_efficiency();
                 break;
             case 3:
                 break;

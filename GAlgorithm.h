@@ -19,6 +19,13 @@ private:
     std::vector<int> d;     // dystans
 public:
     GAlgorithm();
+    GAlgorithm(Graph** _graph, algorithm _algo) :  graph(*_graph), algo(_algo) {}
+    GAlgorithm(GAlgorithm& galo) {
+        this->graph = galo.graph; 
+        this->algo.a_type = galo.algo.a_type; 
+        this->algo.v_start = galo.algo.v_start;
+        this->algo.v_end = galo.algo.v_end;
+    }
     GAlgorithm(Graph** graph, algorithm algo);
     ~GAlgorithm();
 // algorithm execution
@@ -221,7 +228,8 @@ void GAlgorithm::display_MST() {
 }
 
 void GAlgorithm::display_SP() {
-    std::cout << "End\t" << "Dist\t" << "Path\t";
+    std::cout << "End\t" << "Dist\t" << "Path";
+    /*
     for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
         std::vector<int> path;
         int prev = i;
@@ -235,6 +243,7 @@ void GAlgorithm::display_SP() {
             std::cout << " " << path[i];
         std::cout << std::endl;
     }
+    */
 }
 
 void GAlgorithm::display() {
