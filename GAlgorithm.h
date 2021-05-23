@@ -18,15 +18,14 @@ private:
     std::vector<int> key;   // klucz
     std::vector<int> d;     // dystans
 public:
-    GAlgorithm();
-    GAlgorithm(Graph** _graph, algorithm _algo) :  graph(*_graph), algo(_algo) {}
+    GAlgorithm() {}
+    GAlgorithm(Graph** _graph, algorithm _algo);
     GAlgorithm(GAlgorithm& galo) {
         this->graph = galo.graph; 
         this->algo.a_type = galo.algo.a_type; 
         this->algo.v_start = galo.algo.v_start;
         this->algo.v_end = galo.algo.v_end;
     }
-    GAlgorithm(Graph** graph, algorithm algo);
     ~GAlgorithm();
 // algorithm execution
     std::vector<edge> MST_Kruskal_execute();
@@ -44,7 +43,7 @@ public:
 // key[u] - waga najmniejszej krawędzi dla wierzchołka
 // adj[u] - lista sąsiadów wierzchołka
 
-GAlgorithm::GAlgorithm() {}
+
 GAlgorithm::GAlgorithm(Graph** _graph, algorithm _algo) : graph(*_graph), algo(_algo) {
     key.resize(graph->getRepresentation()->v_count);
     p.resize(graph->getRepresentation()->v_count);
@@ -178,6 +177,11 @@ std::vector<edge> GAlgorithm::SP_Bellman_Ford_execute() {
         p[i] = -1;
     }
     d[algo.v_start] = 0;
+    std::cout << "start= " << algo.v_start << std::endl;
+    this->algo.display();
+    for(int i = graph->getRepresentation()->v_count - 1; i >= 0; i--) {
+        std::cout << "d[" << i << "]: " << d[i] << std::endl;
+    }
 
     // relaksacja dla każdej krawędzi 
     for(int i = 0; i < graph->getRepresentation()->v_count - 1; i++) {
@@ -187,7 +191,7 @@ std::vector<edge> GAlgorithm::SP_Bellman_Ford_execute() {
                 d[e.end] = d[e.beg] + graph->getRepresentation()->getWeight(e.beg, e.end);
                 p[e.end] = e.beg;
                 relaxed = true;
-                //std::cout << e.end << ": d " << d[e.end] << " p " << p[e.end] << std::endl;
+                std::cout << e.end << ": d " << d[e.end] << " p " << p[e.end] << std::endl;
             }
         }
         std::cout << relaxed;
@@ -221,29 +225,30 @@ void GAlgorithm::display_MST() {
     int mst_sum = 0;
     std::cout << "Edge \t Weight" << std::endl;
     for (int i = 0; i < graph->getRepresentation()->v_count; i++) {
-        std::cout << "(" << p[i]<< ", " << i << ") \t" << key[i] << std::endl;
+        std::cout << "(" << p[i]<< ", " << i << ") " << key[i] << std::endl;
         mst_sum += key[i];
     }
     std::cout << "MST = " << mst_sum << std::endl;
 }
 
 void GAlgorithm::display_SP() {
-    std::cout << "End\t" << "Dist\t" << "Path";
-    /*
+    std::cout << "End\t" << "Dist\t" << "Path" << std::endl;
+    
     for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
         std::vector<int> path;
         int prev = i;
-        while(p[prev] != algo.v_start) {
+        while(p[prev] != algo.v_start && prev != -1) {
             path.push_back(p[prev]);
             prev = p[prev];
         }
         path.push_back(algo.v_start);
-        std::cout << i << "|" << d[i] << "|";
-        for(int i = path.size(); i > 0; i--)
-            std::cout << " " << path[i];
+        std::cout << i << "\t|" << d[i] << "\t|";
+        for(int e : path) {
+            std::cout << " " << e << ",";
+        }
         std::cout << std::endl;
     }
-    */
+    
 }
 
 void GAlgorithm::display() {

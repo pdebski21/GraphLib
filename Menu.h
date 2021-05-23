@@ -45,7 +45,7 @@ void Menu::menu_core() {
                 break;
             case 2:
                 std::cout << "EFFICIENCY TEST" << std::endl;
-                tester.test_efficiency();
+                tester.test_efficiency();   
                 break;
             case 3:
                 break;
