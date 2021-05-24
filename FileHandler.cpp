@@ -27,9 +27,10 @@ GraphBuffer& FileHandler::read(std::string inPath)
     return g;
 }
 
-void FileHandler::write(std::string outPath)
+void FileHandler::write(std::string outPath, std::vector<long long> res) 
 {
     std::ofstream fs(outPath, std::ofstream::out);
+
     fs.close();
 }
 

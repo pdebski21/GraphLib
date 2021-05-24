@@ -14,8 +14,8 @@ private:
     Core* core = nullptr;
 public:
     Menu() {};
-    Menu(Graph* graph, GAlgorithm* galgo) : tester(graph, galgo) {}
-    Menu(Core* _core) :core(_core) {}
+    Menu(GAlgorithm* galgo) : tester(galgo) {}
+    Menu(Core* _core) : core(_core), tester(Tester(_core->getGalgo())) {}
     void menu_correctness();
     void menu_core();
 };

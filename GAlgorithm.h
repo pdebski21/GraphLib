@@ -49,8 +49,8 @@ GAlgorithm::GAlgorithm(Graph** _graph, algorithm _algo) : graph(*_graph), algo(_
     p.resize(graph->getRepresentation()->v_count);
     d.resize(graph->getRepresentation()->v_count);
     // init krawędzie jeżeli algorytm Bellmana Forda
-    if(algo.a_type == SP_Bellman_Ford) {
-        for(int i = 0; i < graph->getRepresentation()->v_count - 1; i++) {
+    if(algo.a_type == SP_Bellman_Ford || algo.a_type == MST_Kruskal) {
+        for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
             std::vector<int> adj = graph->getRepresentation()->getAdj(i);
             for(int e : adj) {
                 edges.push_back(edge(i, e, graph->getRepresentation()->getWeight(i, e)));
@@ -96,16 +96,18 @@ std::vector<edge> GAlgorithm::MST_Prim_execute() {
         std::vector<int> v = graph->getRepresentation()->getAdj(u.first);   // list sąsiadów wierzchołka u
 
         for(int e : v) {
-            if(mstSet[e] == false && graph->getRepresentation()->getWeight(u.first, e) < key[e] ) {
-                
+            std::cout << u.first << "-" << e << std::endl;
+            //mstSet[e] == false && // ?????? XD
+            if(graph->getRepresentation()->getWeight(u.first, e) < key[e] ) {
                 key[e] = graph->getRepresentation()->getWeight(u.first, e);
                 p[e] = u.first;
+                std::cout << e << "_key:" << key[e] << " p:" << p[e] << std::endl;
             }
         }
     }
 
     for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
-        std::cout << "key:" << key[i] << "p:" << p[i] << std::endl;
+        std::cout << i << "_key:" << key[i] << " p:" << p[i] << std::endl;
     }
 }
 
@@ -113,25 +115,107 @@ std::vector<edge> GAlgorithm::MST_Prim_execute() {
 void edge_sort(std::vector<edge>& edges) {
     std::sort(edges.begin(), edges.end(), [](edge l, edge r){ return l.weight < r.weight; });
 }
-// tesgt
-void makeSet(int* group, int v_count) {
-    for(int i = 0; i < v_count; i++)
-        group[i] = i;
-}
-// test
-int FindSet(int* group, int x) {
-    return group[x];
-}
-// test
-void Union(int* group, int v_count, int x, int y) {
-    for(int i = 0; i < v_count; i++)
-        if(group[i] == group[y])
-            group[y] = group[x];
-}
+
+
+// To represent Disjoint Sets
+struct DisjointSets
+{
+    int *parent, *rnk;
+    int n;
+  
+    // Constructor.
+    DisjointSets(int n)
+    {
+        // Allocate memory
+        this->n = n;
+        parent = new int[n+1];
+        rnk = new int[n+1];
+  
+        // Initially, all vertices are in
+        // different sets and have rank 0.
+        for (int i = 0; i <= n; i++)
+        {
+            rnk[i] = 0;
+  
+            //every element is parent of itself
+            parent[i] = i;
+        }
+    }
+
+    ~DisjointSets() {
+        //delete parent;
+        //delete rnk;
+    }
+  
+    // Find the parent of a node 'u'
+    // Path Compression
+    int find(int u)
+    {
+        /* Make the parent of the nodes in the path
+           from u--> parent[u] point to parent[u] */
+        if (u != parent[u])
+            parent[u] = find(parent[u]);
+        return parent[u];
+    }
+  
+    // Union by rank
+    void merge(int x, int y)
+    {
+        x = find(x), y = find(y);
+  
+        /* Make tree with smaller height
+           a subtree of the other tree  */
+        if (rnk[x] > rnk[y])
+            parent[y] = x;
+        else // If rnk[x] <= rnk[y]
+            parent[x] = y;
+  
+        if (rnk[x] == rnk[y])
+            rnk[y]++;
+    }
+};
 
 std::vector<edge> GAlgorithm::MST_Kruskal_execute() {
+int mst_wt = 0; // Initialize result
+  
+    // Sort edges in increasing order on basis of cost
+    for(edge e : edges) {
+        e.display();
+    }
+    edge_sort(edges);
+    
+    // Create disjoint sets
+    DisjointSets ds(graph->getRepresentation()->v_count);
+  
+    // Iterate through all sorted edges
+    for (edge e : edges)
+    {
+        int u = e.beg;
+        int v = e.end;
+  
+        int set_u = ds.find(u);
+        int set_v = ds.find(v);
+  
+        // Check if the selected edge is creating
+        // a cycle or not (Cycle is created if u
+        // and v belong to same set)
+        if (set_u != set_v)
+        {
+            // Current edge will be in the MST
+            // so print it
+            std::cout << u << " - " << v << " | " << e.weight << std::endl;
+  
+            // Update MST weight
+            mst_wt += e.weight;
+  
+            // Merge two sets
+            ds.merge(set_u, set_v);
+        }
+    }
 
+    std::cout << "MST = " << mst_wt << std::endl;
 }
+
 
 std::vector<edge> GAlgorithm::SP_Dijkstra_execute() {
     // init
@@ -152,21 +236,13 @@ std::vector<edge> GAlgorithm::SP_Dijkstra_execute() {
         v_d.pop_back();
         // dla każdego sąsiada min elementu wykonaj petle
         std::vector<int> adj = graph->getRepresentation()->getAdj(u.first); // sąsiedzi u
-        std::cout << "odwiedzone z " << u.first << std::endl;
         for(int e : adj) {
             if(d[e] > *u.second + graph->getRepresentation()->getWeight(u.first, e)) {
                 d[e] = *u.second + graph->getRepresentation()->getWeight(u.first, e);
                 p[e] = u.first;
-                std::cout << e << ": d " << d[e] << " p " << p[e] << std::endl;
             }
         }
     }  
-// displ
-    std::cout << "finalne wartosci:" << std::endl;
-    for(int i = 0; i < graph->getRepresentation()->v_count; i ++) {
-        std::cout << i << ": d " << d[i] << " p " << p[i] << std::endl;
-    }
-
 }
 
 std::vector<edge> GAlgorithm::SP_Bellman_Ford_execute() {
@@ -177,11 +253,6 @@ std::vector<edge> GAlgorithm::SP_Bellman_Ford_execute() {
         p[i] = -1;
     }
     d[algo.v_start] = 0;
-    std::cout << "start= " << algo.v_start << std::endl;
-    this->algo.display();
-    for(int i = graph->getRepresentation()->v_count - 1; i >= 0; i--) {
-        std::cout << "d[" << i << "]: " << d[i] << std::endl;
-    }
 
     // relaksacja dla każdej krawędzi 
     for(int i = 0; i < graph->getRepresentation()->v_count - 1; i++) {
@@ -191,10 +262,8 @@ std::vector<edge> GAlgorithm::SP_Bellman_Ford_execute() {
                 d[e.end] = d[e.beg] + graph->getRepresentation()->getWeight(e.beg, e.end);
                 p[e.end] = e.beg;
                 relaxed = true;
-                std::cout << e.end << ": d " << d[e.end] << " p " << p[e.end] << std::endl;
             }
         }
-        std::cout << relaxed;
         if(relaxed == false) break; // jeżeli nie wykonano żandej relaksacji skracamy algorytm
     }
     // sprawdzenie czy są cykle ujemne
@@ -202,13 +271,6 @@ std::vector<edge> GAlgorithm::SP_Bellman_Ford_execute() {
         if(d[e.end] > d[e.beg] + graph->getRepresentation()->getWeight(e.beg, e.end))
             std::cout << "CYKLE UJEMNE - DO SOMETHING" << std::endl;
     }
-
-// displ
-    std::cout << "finalne wartosci:" << std::endl;
-    for(int i = 0; i < graph->getRepresentation()->v_count; i ++) {
-        std::cout << i << ": d " << d[i] << " p " << p[i] << std::endl;
-    }
-
 }
 
 
