@@ -6,6 +6,7 @@
 #include "GraphGenerator.h"
 #include "Graph.h"
 #include "GAlgorithm.h"
+#include "StructLib.h"
 
 #define N 100
 #define STEP 5
@@ -25,29 +26,35 @@ class Tester {
 private:
     std::unique_ptr<Graph> graph = nullptr;
     std::unique_ptr<GAlgorithm> galgo = nullptr;
-
+    
+    std::vector<std::vector<long long>> res;
+    int res_count = 0;
 public: 
     Tester() {}
     Tester(GAlgorithm* _galgo) : galgo(_galgo) {}
 
-    void test_efficiency();
+    void write_res();
+    void test_efficiency(double density, represent_type r_type);
 };
 
-void Tester::test_efficiency() {
-    int res_count = 0;
-    std::vector<std::vector<long long>> res;
+void Tester::write_res() {
+    FileHandler fh;
+    fh.write("Results.csv", res);
+}
+
+void Tester::test_efficiency(double density,  represent_type r_type) {
     long long int frequency, start, elapsed, sum, avg; 
     QueryPerformanceFrequency((LARGE_INTEGER *)&frequency);
-
-
-    // test 25%
-    sum = 0;
-    res_count++;
+ 
+// PRMIN
+/*
     res.push_back(std::vector<long long>());
     for(int i = 1; i <= STEP; i++) {
+        sum = 0;
         for(int j = 0; j < CYCLES; j++) {
+            
             // init
-            graph = GraphGenerator::Generate(0.25, N * i, r_matrix);
+            graph = GraphGenerator::Generate(density, N * i, r_type);
             int v_end, v_start;
             v_start = rand() % graph->getRepresentation()->v_count;
             do {
@@ -58,25 +65,119 @@ void Tester::test_efficiency() {
 
             // algorithm
             start = read_QPC();
-            galgo->SP_Dijkstra_execute();
+            galgo->MST_Prim_execute();
             elapsed = read_QPC() - start; 
 
-            std::cout << "Time [us] = " << (1000000.0 * elapsed) / frequency << std::endl; 
+            //std::cout << "Time [us] = " << (1000000.0 * elapsed) / frequency << std::endl; 
             sum += (double) (1000000.0 * elapsed) / frequency;
         }
         avg = sum / CYCLES;
         std::cout << "avgTime [us] = " << avg << std::endl;
-        sum = 0;
-        //res[res_count].push_back(avg);
+        res.at(res_count).push_back(avg);
     }
-    //for(long long e : res[res_count])
-      //  std::cout << "avg: " << e << std::endl;
+    for(long long e : res.at(res_count))
+      std::cout << "avg: " << e << std::endl;
+    res_count++;
+*/
+// KRUSKAL
 
-    // test 50%
-    // test 75%
-    // test 99%
+    res.push_back(std::vector<long long>());
+    for(int i = 1; i <= STEP; i++) {
+        sum = 0;
+        for(int j = 0; j < CYCLES; j++) {
+            
+            // init
+            graph = GraphGenerator::Generate(density, N * i, r_type);
+            int v_end, v_start;
+            v_start = rand() % graph->getRepresentation()->v_count;
+            do {
+                v_end = rand() % graph->getRepresentation()->v_count;
+            } while(v_end == v_start);
+            algorithm algo(MST_Kruskal, v_start, v_end);
+            galgo = std::unique_ptr<GAlgorithm>(new GAlgorithm( (Graph**) &graph, algo));
 
+            // algorithm
+            start = read_QPC();
+            galgo->MST_Kruskal_execute();
+            elapsed = read_QPC() - start; 
 
+            //std::cout << "Time [us] = " << (1000000.0 * elapsed) / frequency << std::endl; 
+            sum += (double) (1000000.0 * elapsed) / frequency;
+        }
+        avg = sum / CYCLES;
+        std::cout << "avgTime [us] = " << avg << std::endl;
+        res.at(res_count).push_back(avg);
+    }
+    for(long long e : res.at(res_count))
+      std::cout << "avg: " << e << std::endl;
+    res_count++;
+
+/*
+
+// BELLMAN-FORD
+    res.push_back(std::vector<long long>());
+    for(int i = 1; i <= STEP; i++) {
+        sum = 0;
+        for(int j = 0; j < CYCLES; j++) {
+            
+            // init
+            graph = GraphGenerator::Generate(density, N * i, r_type);
+            int v_end, v_start;
+            v_start = rand() % graph->getRepresentation()->v_count;
+            do {
+                v_end = rand() % graph->getRepresentation()->v_count;
+            } while(v_end == v_start);
+            algorithm algo(SP_Bellman_Ford, v_start, v_end);
+            galgo = std::unique_ptr<GAlgorithm>(new GAlgorithm( (Graph**) &graph, algo));
+
+            // algorithm
+            start = read_QPC();
+            galgo->SP_Bellman_Ford_execute();
+            elapsed = read_QPC() - start; 
+
+            //std::cout << "Time [us] = " << (1000000.0 * elapsed) / frequency << std::endl; 
+            sum += (double) (1000000.0 * elapsed) / frequency;
+        }
+        avg = sum / CYCLES;
+        std::cout << "avgTime [us] = " << avg << std::endl;
+        res.at(res_count).push_back(avg);
+    }
+    for(long long e : res.at(res_count))
+      std::cout << "avg: " << e << std::endl;
+    res_count++;
+    
+// DJIKSTRA
+    res.push_back(std::vector<long long>());
+    for(int i = 1; i <= STEP; i++) {
+        sum = 0;
+        for(int j = 0; j < CYCLES; j++) {
+            
+            // init
+            graph = GraphGenerator::Generate(density, N * i, r_type);
+            int v_end, v_start;
+            v_start = rand() % graph->getRepresentation()->v_count;
+            do {
+                v_end = rand() % graph->getRepresentation()->v_count;
+            } while(v_end == v_start);
+            algorithm algo(SP_Dijkstra, v_start, v_end);
+            galgo = std::unique_ptr<GAlgorithm>(new GAlgorithm( (Graph**) &graph, algo));
+
+            // algorithm
+            start = read_QPC();
+            galgo->SP_Dijkstra_execute();
+            elapsed = read_QPC() - start; 
+
+            //std::cout << "Time [us] = " << (1000000.0 * elapsed) / frequency << std::endl; 
+            sum += (double) (1000000.0 * elapsed) / frequency;
+        }
+        avg = sum / CYCLES;
+        std::cout << "avgTime [us] = " << avg << std::endl;
+        res.at(res_count).push_back(avg);
+    }
+    for(long long e : res.at(res_count))
+      std::cout << "avg: " << e << std::endl;
+    res_count++;
+*/
 }
 
 #endif

@@ -27,10 +27,19 @@ GraphBuffer& FileHandler::read(std::string inPath)
     return g;
 }
 
-void FileHandler::write(std::string outPath, std::vector<long long> res) 
+void FileHandler::write(std::string outPath, std::vector<std::vector<long long>>& res) 
 {
     std::ofstream fs(outPath, std::ofstream::out);
-
+    if(fs.is_open()) {
+        for( auto v : res ) {
+            for( auto e : v ) {
+                fs << e << ";";
+            }
+            fs << std::endl;
+        }
+    } else {
+        std::cout << "error - opening file failed" << std::endl;
+    }
     fs.close();
 }
 

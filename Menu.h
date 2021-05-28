@@ -45,7 +45,15 @@ void Menu::menu_core() {
                 break;
             case 2:
                 std::cout << "EFFICIENCY TEST" << std::endl;
-                tester.test_efficiency();   
+                tester.test_efficiency(0.25, r_list);
+                //tester.test_efficiency(0.25, r_matrix);
+                //tester.test_efficiency(0.50, r_list);
+                //tester.test_efficiency(0.50, r_matrix);
+                //tester.test_efficiency(0.75, r_list);
+                //tester.test_efficiency(0.75, r_matrix);
+                //tester.test_efficiency(0.99, r_list);
+                //tester.test_efficiency(0.99, r_matrix);
+                tester.write_res();
                 break;
             case 3:
                 break;

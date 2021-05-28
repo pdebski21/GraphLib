@@ -69,6 +69,7 @@ GAlgorithm::~GAlgorithm() {}
 std::vector<edge> GAlgorithm::MST_Prim_execute() {
     std::vector<bool> mstSet;
     mstSet.resize(graph->getRepresentation()->v_count);
+
     std::vector<std::pair<int, int*>> v_key;
     for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
         mstSet.push_back(false);
@@ -97,13 +98,23 @@ std::vector<edge> GAlgorithm::MST_Prim_execute() {
 
         for(int e : v) {
             std::cout << u.first << "-" << e << std::endl;
-            //mstSet[e] == false && // ?????? XD
-            if(graph->getRepresentation()->getWeight(u.first, e) < key[e] ) {
+            //mstSet[e] == false
+            if(mstSet[e] == false && graph->getRepresentation()->getWeight(u.first, e) < key[e] ) {
                 key[e] = graph->getRepresentation()->getWeight(u.first, e);
                 p[e] = u.first;
-                std::cout << e << "_key:" << key[e] << " p:" << p[e] << std::endl;
+                //std::cout << e << "_key:" << key[e] << " p:" << p[e] << std::endl;
             }
+            
+            if(mstSet[e] == false && graph->getRepresentation()->getWeight(e, u.first) < key[e] ) {
+                key[e] = graph->getRepresentation()->getWeight(e, u.first);
+                p[e] = u.first;
+                //std::cout << e << "_key:" << key[u.first] << " p:" << p[u.first] << std::endl;
+            }
+                  
         }
+        // jeżeli naruszyliśmy strukture koprac - napraw
+        if(!std::is_heap(v_key.begin(), v_key.end(), [](std::pair<int, int*> l, std::pair<int, int*> r){ return *l.second > *r.second; }))
+            std::make_heap(v_key.begin(), v_key.end(), [](std::pair<int, int*> l, std::pair<int, int*> r){ return *l.second > *r.second; });
     }
 
     for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
@@ -203,7 +214,7 @@ int mst_wt = 0; // Initialize result
         {
             // Current edge will be in the MST
             // so print it
-            std::cout << u << " - " << v << " | " << e.weight << std::endl;
+            //std::cout << u << " - " << v << " | " << e.weight << std::endl;
   
             // Update MST weight
             mst_wt += e.weight;
@@ -213,12 +224,13 @@ int mst_wt = 0; // Initialize result
         }
     }
 
-    std::cout << "MST = " << mst_wt << std::endl;
+    //std::cout << "MST = " << mst_wt << std::endl;
 }
 
 
 std::vector<edge> GAlgorithm::SP_Dijkstra_execute() {
     // init
+    // using vectorp = std::vector<std::pair<int, int*>>;
     std::vector<std::pair<int, int*>> v_d;   // first index wierzchołka, second dystans
     for(int i = graph->getRepresentation()->v_count - 1; i >= 0; i--) {
         d[i] = std::numeric_limits<int>::max();
@@ -242,6 +254,8 @@ std::vector<edge> GAlgorithm::SP_Dijkstra_execute() {
                 p[e] = u.first;
             }
         }
+        if(!std::is_heap(v_d.begin(), v_d.end(), [](std::pair<int, int*> l, std::pair<int, int*> r){ return *l.second > *r.second; }))
+            std::make_heap(v_d.begin(), v_d.end(), [](std::pair<int, int*> l, std::pair<int, int*> r){ return *l.second > *r.second; });
     }  
 }
 
@@ -268,27 +282,21 @@ std::vector<edge> GAlgorithm::SP_Bellman_Ford_execute() {
     }
     // sprawdzenie czy są cykle ujemne
     for(edge e : edges) {
-        if(d[e.end] > d[e.beg] + graph->getRepresentation()->getWeight(e.beg, e.end))
+        if(d[e.end] > d[e.beg] + graph->getRepresentation()->getWeight(e.beg, e.end)) {
             std::cout << "CYKLE UJEMNE - DO SOMETHING" << std::endl;
+            break;
+        }
     }
 }
 
-
 void GAlgorithm::display_MST() {
-    /*
-    for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
-        std::cout << "p:" << p[i] << ", ";
-    }
-    std::cout << std::endl;
-    for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
-        std::cout << "key:" << key[i] << ", ";
-    }
-    */
     int mst_sum = 0;
-    std::cout << "Edge \t Weight" << std::endl;
+    std::cout<<"Edge \tWeight\n"; 
     for (int i = 0; i < graph->getRepresentation()->v_count; i++) {
-        std::cout << "(" << p[i]<< ", " << i << ") " << key[i] << std::endl;
-        mst_sum += key[i];
+        if(p[i] != p[algo.v_start]) {
+            std::cout << p[i] << " - " << i << " \t" << graph->getRepresentation()->getWeight(p[i], i) << std::endl;
+            mst_sum += key[i];
+        }
     }
     std::cout << "MST = " << mst_sum << std::endl;
 }
@@ -300,17 +308,17 @@ void GAlgorithm::display_SP() {
         std::vector<int> path;
         int prev = i;
         while(p[prev] != algo.v_start && prev != -1) {
-            path.push_back(p[prev]);
+            if(p[prev] != p[algo.v_start])
+                path.push_back(p[prev]);
             prev = p[prev];
         }
         path.push_back(algo.v_start);
         std::cout << i << "\t|" << d[i] << "\t|";
-        for(int e : path) {
-            std::cout << " " << e << ",";
+        for(auto it = path.end() - 1; it >= path.begin() || it == path.begin() ; it--) {
+            std::cout << " " << *it << ","; 
         }
         std::cout << std::endl;
     }
-    
 }
 
 void GAlgorithm::display() {

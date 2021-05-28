@@ -14,7 +14,7 @@ class FileHandler {
     public:
     // I/O
         GraphBuffer& read(std::string inPath);
-        void write(std::string outPath, std::vector<long long> res);
+        void write(std::string outPath, std::vector<std::vector<long long>>& res);
         void display_curr_data();
     // setters / getters
         GraphBuffer& getBuffer() { return g; }
