@@ -39,7 +39,7 @@ std::vector<int> NMatrix::getAdj(int v_index) {
     std::vector<int> res;
     if(v_index < v_count && v_index >=0) {
         for(int i = 0; i < v_count; i++) 
-            if(mat[v_index][i] > 0)
+            if(mat[v_index][i] != 0)
                 res.push_back(i);
     }
     return res;

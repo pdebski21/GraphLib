@@ -211,6 +211,11 @@ void GAlgorithm::SP_Dijkstra_execute() {
 }
 
 void GAlgorithm::SP_Bellman_Ford_execute() {
+    // graph->getRepresentation()->display();
+    for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
+        graph->getRepresentation()->display_adj(i);
+    }
+
     // init
     std::vector<std::pair<int, int*>> v_d;   // first index wierzchołka, second dystans
     for(int i = graph->getRepresentation()->v_count - 1; i >= 0; i--) {
