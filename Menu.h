@@ -10,7 +10,7 @@
 class Menu {
 private:
     Tester tester;
-    FileHandler fhandl;
+    FileHandler* fhandl = nullptr;
     Core* core = nullptr;
 public:
     Menu() {};
@@ -21,23 +21,25 @@ public:
 };
 
 void Menu::menu_core() {
-    int control;
+    int control = 0;
     std::string path;
-    std::cout << "CORE MENU" << std::endl;
-    std::cout << "1) Test functionality" << std::endl;
-    std::cout << "2) Test efficiency" << std::endl;
-    std::cout << "3) Exit" << std::endl;
+
     while(control != 3) {
+        fhandl = new FileHandler();
+        std::cout << "CORE MENU" << std::endl;
+        std::cout << "1) Test functionality" << std::endl;
+        std::cout << "2) Test efficiency" << std::endl;
+        std::cout << "3) Exit" << std::endl;
         std::cin >> control;    
         switch(control) {
             case 1:
                 std::cout << "Load File with graph" << std::endl;
                 std::cout << "Enter data file name:" << std::endl;
                 std::cin >> path; 
-                fhandl.read(path);
-                if(fhandl.getIsFileLoaded()) {
+                fhandl->read(path);
+                if(fhandl->getIsFileLoaded()) {
                     std::cout << "Graph in file:" << std::endl;
-                    fhandl.getBuffer().display();
+                    fhandl->getBuffer().display();
                     menu_correctness();
                 } else {
                     std::cout << "Problem in reading file occured - check entered file path" << std::endl;
@@ -47,12 +49,13 @@ void Menu::menu_core() {
                 std::cout << "EFFICIENCY TEST" << std::endl;
                 tester.test_efficiency(0.25, r_list);
                 //tester.test_efficiency(0.25, r_matrix);
-                //tester.test_efficiency(0.50, r_list);
+                tester.test_efficiency(0.50, r_list);
                 //tester.test_efficiency(0.50, r_matrix);
-                //tester.test_efficiency(0.75, r_list);
+                tester.test_efficiency(0.75, r_list);
                 //tester.test_efficiency(0.75, r_matrix);
-                //tester.test_efficiency(0.99, r_list);
+                tester.test_efficiency(0.99, r_list);
                 //tester.test_efficiency(0.99, r_matrix);
+                std::cout << "EFFICIENCY TEST ENDED" << std::endl;
                 tester.write_res();
                 break;
             case 3:
@@ -60,6 +63,10 @@ void Menu::menu_core() {
             default:
                 std::cout << "OPTION OUT OF MENU" << std::endl;
                 break;
+        }
+        if(fhandl != nullptr) {
+            delete fhandl;
+            fhandl = nullptr;
         }
     }
     
@@ -69,6 +76,7 @@ void Menu::menu_correctness() {
     represent_type r_type;
     int control = 0;
     int rep_control = 0;
+    
     while(control != 5) {
         while(rep_control != 1 && rep_control != 2) {
             std::cout << "Choose representation type:" << std::endl;
@@ -86,7 +94,7 @@ void Menu::menu_correctness() {
                     std::cout << "OPTION OUT OF MENU :" << std::endl;
             }
         }
-        core->init_graph(fhandl.getBuffer(), r_type);
+        core->init_graph(fhandl->getBuffer(), r_type);
 
         std::cout << "CORRECTNESS MENU" << std::endl;
         std::cout << "1) execute MST PRIM algorithm" << std::endl;
@@ -98,22 +106,22 @@ void Menu::menu_correctness() {
 
         switch(control) {
             case 1:
-                core->init_algorithm(fhandl.getBuffer(), MST_Prim);
+                core->init_algorithm(fhandl->getBuffer(), MST_Prim);
                 core->getGalgo()->MST_Prim_execute();
                 core->getGalgo()->display_MST();
                 break;
             case 2:
-                core->init_algorithm(fhandl.getBuffer(), MST_Kruskal);
+                core->init_algorithm(fhandl->getBuffer(), MST_Kruskal);
                 core->getGalgo()->MST_Kruskal_execute();
                 core->getGalgo()->display_MST();
                 break;
             case 3:
-                core->init_algorithm(fhandl.getBuffer(), SP_Dijkstra);
+                core->init_algorithm(fhandl->getBuffer(), SP_Dijkstra);
                 core->getGalgo()->SP_Dijkstra_execute();
                 core->getGalgo()->display_SP();
                 break;
             case 4:
-                core->init_algorithm(fhandl.getBuffer(), SP_Bellman_Ford);
+                core->init_algorithm(fhandl->getBuffer(), SP_Bellman_Ford);
                 core->getGalgo()->SP_Bellman_Ford_execute();
                 core->getGalgo()->display_SP();
                 break;
@@ -125,5 +133,6 @@ void Menu::menu_correctness() {
         }
     }
 }
+
 
 #endif
