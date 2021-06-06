@@ -8,8 +8,9 @@ NList::NList(int _e_count, int _v_count, std::vector<edge> edges)
 }
 
 NList::~NList() {
-    if(list != nullptr)
-        delete list;
+    //if(list != nullptr) {	// AS
+    //    delete list;
+    //}
 }
 
 void NList::display() {
@@ -43,5 +44,11 @@ int NList::getWeight(int u, int v) {
 
 
 void NList::setValue(int u, int v,int value) {
-    // implem z listą
+    for(std::pair<int, int> e : list[u])
+        if(e.first == v  && e.second != 0) {
+            e.second = value;
+            return;
+        }
+    list[u].push_front(std::pair<int, int>(v, value));
+    
 }

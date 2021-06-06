@@ -13,9 +13,19 @@ GAlgorithm::GAlgorithm(Graph** _graph, algorithm _algo) : graph(*_graph), algo(_
             }
         }
     }
+    // reprezentacja grafu nieskierowanego dla MST
+    if(algo.a_type == MST_Prim) {
+        graph->getRepresentation()->display();
+        for(int i = 0; i < graph->getRepresentation()->v_count; i++)
+            for(int j = 0; j < graph->getRepresentation()->v_count; j++) {
+                if(graph->getRepresentation()->getWeight(i, j) != 0)
+                    graph->getRepresentation()->setValue(j , i, graph->getRepresentation()->getWeight(i, j));
+            }
+        graph->getRepresentation()->display();
+    }
 }
 
-GAlgorithm::~GAlgorithm() {}
+GAlgorithm::~GAlgorithm() {}    
 
 void GAlgorithm::MST_Prim_execute() {
     using vectorp = std::vector<std::pair<int, int*>>;
@@ -35,6 +45,14 @@ void GAlgorithm::MST_Prim_execute() {
     // set start of MST
     key[algo.v_start] = 0;
 
+// --------------------------------------------------------------------------------------------------- AS
+    for(int i = 0; i < graph->getRepresentation()->v_count; i++)
+    {
+	for(int j = i + 1 ; j < graph->getRepresentation()->v_count; j++)
+	    graph->getRepresentation()->setValue(j, i, graph->getRepresentation()->getWeight(i, j));
+    }	
+// --------------------------------------------------------------------------------------------------- AS
+
     std::make_heap(v_key.begin(), v_key.end(), [](pairi l, pairi r) { return *l.second > *r.second; });
 
     while (!v_key.empty()) {
@@ -43,36 +61,26 @@ void GAlgorithm::MST_Prim_execute() {
         pairi u = v_key.back();
         v_key.pop_back();
 
-
         mstSet[u.first] = true;
 
         std::vector<int> adj = graph->getRepresentation()->getAdj(u.first);
         for (int v : adj) {
-
-
-            if (mstSet[v] == false && graph->getRepresentation()->getWeight(u.first, v) < key[v]) {
+            // relaksacja krawędzi
+            if (graph->getRepresentation()->getWeight(u.first, v) && mstSet[v] == false && graph->getRepresentation()->getWeight(u.first, v) < key[v]) {
                 p[v] = u.first;
                 key[v] = graph->getRepresentation()->getWeight(u.first, v); 
             }
-            if(mstSet[v] == false && graph->getRepresentation()->getWeight(v, u.first) != 0 &&
-                                     graph->getRepresentation()->getWeight(v, u.first) < key[v]) {
-                p[v] = u.first;
-                key[v] = graph->getRepresentation()->getWeight(v, u.first);
-            }
-
+            // reorganize heap if needed
             if (!std::is_heap(v_key.begin(), v_key.end(), [](pairi l, pairi r) { return *l.second > *r.second; }))
                 std::make_heap(v_key.begin(), v_key.end(), [](pairi l, pairi r) { return *l.second > *r.second; });
-            for(pairi e : v_key) {
-                std::cout << *e.second << ",";
-            }
-            std::cout << std::endl;
-        }
-    }
 
+        }
+	    std::cout << std::endl;
+    }
 
     for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
         if(p[i] >= 0) {
-            std::cout << p[i] << "-" << i << std::endl;
+            edge(p[i], i, graph->getRepresentation()->getWeight(p[i], i)).display();
             mst.push_back( edge(p[i], i, graph->getRepresentation()->getWeight(p[i], i)) );
         }
     }
@@ -211,10 +219,6 @@ void GAlgorithm::SP_Dijkstra_execute() {
 }
 
 void GAlgorithm::SP_Bellman_Ford_execute() {
-    // graph->getRepresentation()->display();
-    for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
-        graph->getRepresentation()->display_adj(i);
-    }
 
     // init
     std::vector<std::pair<int, int*>> v_d;   // first index wierzchołka, second dystans
@@ -262,19 +266,27 @@ void GAlgorithm::display_SP() {
     for(int i = 0; i < graph->getRepresentation()->v_count; i++) {
         std::vector<int> path;
         int prev = i;
-        while(p[prev] != algo.v_start && prev != -1) {
-            if(p[prev] != p[algo.v_start])
+
+	if(i != algo.v_start)
+          path.push_back(i);    // AS dodatkowo wierzcholek koncowy sciezki
+  
+        while(p[prev] != algo.v_start && p[prev] != -1) {   
+            if(p[prev] != algo.v_start)	
                 path.push_back(p[prev]);
             prev = p[prev];
         }
         path.push_back(algo.v_start);
         std::cout << i << "\t|" << d[i] << "\t|";
-        for(auto it = path.end() - 1; it >= path.begin() || it == path.begin() ; it--) {
-            std::cout << " " << *it << ",";
-        }
-        std::cout << std::endl;
 
+        for(auto it = path.end() - 1; it >= path.begin() || it == path.begin() ; it--) {	// AS
+            std::cout << " " << *it << ",";
+	    if(it == path.begin())
+	      break;
+	}
+
+        std::cout << std::endl;
     }
+
     // jeżeli są wagi ujemne wyniki mogą być złe
     if(negativeWeights) {
         std::cout << "WAGI UJEMNE - Wyniki moga byc niepoprawne" << std::endl;
